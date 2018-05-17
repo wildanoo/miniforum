@@ -66,10 +66,44 @@
                 </div>
             </div>
         </nav>
+        <div class="py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+                    <a href="{{ route('discussions.create') }}" class="form-control btn btn-primary">Create a new discussion</a>
+                        <div class="py-2"></div>
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="/forum" style="text-decoration:none;">Home</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="py-2"></div>
+                        <div class="card">
+                            <div class="card-header">
+                                Channels
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    @foreach($channels as $channel)
+                                        <li class="list-group-item">
+                                            <a href="{{ route('channel',['slug' => $channel->slug]) }}" style="text-decoration:none">{{ $channel->title }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        @yield('content')
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

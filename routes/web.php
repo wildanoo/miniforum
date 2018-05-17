@@ -14,14 +14,26 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/discuss', function () {
+    return view('discuss');
+});
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/forum', 'ForumsController@index')->name('forum');
 
 Route::get('{provider}/auth','SocialsController@auth')->name('social.auth');
 Route::get('/{provider}/redirect','SocialsController@auth_callback')->name('social.callback');
+Route::get('channel/{slug}','ForumsController@channel')->name('channel');
+Route::get('discussion/{slug}','DiscussionsController@show')->name('discussion');
 
 Route::group(['middleware' => 'auth'], function(){
     Route::resource('channels', 'ChannelsController');
+    
+    Route::get('discussion/create/new','DiscussionsController@create')->name('discussions.create');
+    Route::post('discussion/store','DiscussionsController@store')->name('discussions.store');
+    
+    Route::post('discussion/reply/{id}','DiscussionsController@reply')->name('discussion.reply');
+    Route::get('reply/like/{id}','RepliesController@like')->name('reply.like');
+    Route::get('reply/unlike/{id}','RepliesController@unlike')->name('reply.unlike');
 });
