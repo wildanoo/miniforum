@@ -8,17 +8,18 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Miniforum Apps') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
+    <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"></link>
+    
 </head>
 <body>
     <div id="app">
@@ -66,6 +67,18 @@
                 </div>
             </div>
         </nav>
+        @if($errors->count() > 0)
+        <div class="py-2"></div>
+            <ul class="list-group-item">
+                @foreach($errors->all() as $error)
+                    <li class="list-group-item text-danger">
+                        {{ $error }}
+                    </li>
+                @endforeach
+            </ul>
+            <div class="py-2"></div>
+        @endif
+        
         <div class="py-4">
             <div class="container">
                 <div class="row">
@@ -79,9 +92,34 @@
                                     <li class="list-group-item">
                                         <a href="/forum" style="text-decoration:none;">Home</a>
                                     </li>
+                                    <li class="list-group-item">
+                                        <a href="/forum?filter=me" style="text-decoration:none;">My discussions</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="/forum?filter=solved" style="text-decoration:none;">Answered discussions</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="/forum?filter=unsolved" style="text-decoration:none;">Unanswered discussions</a>
+                                    </li>
                                 </ul>
                             </div>
+                        
                         </div>
+
+                        @if(Auth::check())
+                            @if(Auth::user()->admin)
+                            <div class="py-2"></div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <a href="/channels" style="text-decoration:none;">All channels</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            @endif
+                        @endif
                         <div class="py-2"></div>
                         <div class="card">
                             <div class="card-header">
@@ -105,5 +143,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+    
+    <script src="{{ asset('js/toastr.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        @if(Session::has('success'))
+            toastr.success("{{ Session::get('success') }}");
+        @endif
+
+        hljs.initHighlightingOnLoad();
+    </script>
 </body>
 </html>

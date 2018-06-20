@@ -4,8 +4,25 @@
 <div class="card">
     <div class="card-header">
         <img src="{{ $d->user->avatar }}" alt="" width="40px" height="40px">&nbsp;&nbsp;&nbsp;
-    <span>{{ $d->user->name }}, <b>{{ $d->created_at->diffForHumans() }}</b></span>
-    <a href="{{ route('discussion',['slug' => $d->slug]) }}" class="btn btn-secondary float-right">View</a>
+        <span>{{ $d->user->name }}, <b>( {{ $d->user->points }} )</b></span>
+
+        @if($d->hasBestAnswer())
+        <span class="btn btn-sm btn-success float-right">Closed</span>
+        @else
+        <span class="btn btn-sm btn-danger float-right">Open</span>
+        @endif
+        
+        @if(Auth::id() == $d->user->id)
+            @if(!$d->hasBestAnswer())
+                <a href="{{ route('discussion.edit',['slug' => $d->slug]) }}" class="btn btn-info btn-sm float-right mr-2">Edit</a>
+            @endif
+        @endif
+
+        @if($d->is_being_watched_by_auth_user())
+            <a href="{{ route('discussion.unwatch',['id' => $d->id]) }}" class="btn btn-secondary btn-sm float-right mr-2">Unwatch</a>
+        @else
+            <a href="{{ route('discussion.watch',['id' => $d->id]) }}" class="btn btn-secondary btn-sm float-right mr-2">Watch</a>
+        @endif
     </div>
 
     <div class="card-body">
@@ -14,8 +31,28 @@
         </h4>
         <hr>
         <p class="text-center">
-            {{ $d->content }}
+            {!! Markdown::convertToHtml($d->content) !!}
         </p>
+
+        <hr>
+
+        @if($best_answer)
+        <div class="text-center">
+            <h3 class="text-center mt-5">BEST ANSWER</h3>
+            <div class="card card-success">
+                <div class="card-header">
+                    <img src="{{ $best_answer->user->avatar }}" alt="" width="40px" height="40px">&nbsp;&nbsp;&nbsp;
+                    <span>{{ $best_answer->user->name }}, <b>( {{ $best_answer->user->points }} )</b></span>
+                </div>
+
+                <div class="card-body">
+                    {!! Markdown::convertToHtml($best_answer->content) !!}
+                </div>
+            </div>
+        </div>
+        
+        @endif
+
     </div>
     <div class="card-footer">
         <span>
@@ -30,13 +67,23 @@
 <div class="card">
     <div class="card-header">
         <img src="{{ $r->user->avatar }}" alt="" width="40px" height="40px">&nbsp;&nbsp;&nbsp;
-        <span>{{ $r->user->name }}, <b>{{ $r->created_at->diffForHumans() }}</b></span>
-        <a href="{{ route('discussion',['slug' => $r->slug]) }}" class="btn btn-secondary float-right">View</a>
+        <span>{{ $r->user->name }}, <b>( {{ $r->user->points }} )</b></span>
+        @if(!$best_answer)
+            @if(Auth::id() == $d->user->id)
+                <a href="{{ route('discussion.best.answer',['id' => $r->id]) }}" class="btn btn-primary btn-sm float-right">Mark as best answer</a>
+            @endif
+        @endif
+
+        @if(Auth::id() == $r->user->id)
+            @if(!$r->best_answer)
+            <a href="{{ route('reply.edit',['id' => $r->id]) }}" class="btn btn-info btn-sm float-right mr-2">Edit</a>
+            @endif
+        @endif
     </div>
 
     <div class="card-body">
         <p class="text-center">
-            {{ $r->content }}
+            {!!  Markdown::convertToHtml($r->content) !!}
         </p>
     </div>
     <div class="card-footer">
